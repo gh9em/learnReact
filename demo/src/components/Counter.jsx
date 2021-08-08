@@ -18,8 +18,8 @@ export default class Counter extends Component {
 
     render() {
         return (<div>
-        {this.state.count}
         <input type="button" value="+" onClick={this.handleIncrement} />
+        <span style={{fontSize: 40}}>{this.state.count}</span>
         <input type="button" value="-" onClick={this.handleDecrement} />
         </div>);
     }
