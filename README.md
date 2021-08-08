@@ -54,3 +54,37 @@ cd demo
     }
     ...
     ```
+
+## Redux
+
+![redux work principle](http://cn.redux.js.org/assets/images/ReduxDataFlowDiagram-49fa8c3968371d9ef6f2a1486bd40a26.gif)
+
++ Redux(`Module`)
+  + `Store` class
+  + `Store createStore(Reducer reducer)` api
++ Store(`Object` type): state global storage
+  + `Object getState()` api
+  + `void dispath(Action action)` api
+  + `void subscribe(Subscriber subscriber)` api
++ Reducer(`Function` type): accept params `(preState, curAction)`, similar to `Array.property.reduce(preResult, curItem)`
+  + Reducer Slice(`Function` type): all combined into a root reducer, for example
+    ```js
+    /**
+     *          |-rootReducer(Reducer)----------------------------------|
+     *          |  |--------------|  |--------------|  |--------------| |
+     * preState>|>>|reducerSlice1 |>>|reducerSlice2 |>>|      ...     | |
+     * newState<|<<|(ReducerSlice)|<<|(ReducerSlice)|<<|(ReducerSlice)| |
+     *          |  |--------------|  |--------------|  |--------------| |
+     *          |-------------------------------------------------------|
+     */
+    // import { combineReduer } from 'redux';
+    const combineReducers = reducers => 
+        (state = {}, action) => Object.entries(reducers)
+            .reduce((preState, [namespace, reduce]) => 
+                Object.defineProperty(preState, namespace, {value: reduce(state[namespace], action)}), {});
+
+    const rootReducer = combineReduer({
+        action1: reducerSlice1(preState, action1) => ({...preState}),
+        action2: reducerSlice2(preState, action2) => ({...preState}),
+    });
+    ```
