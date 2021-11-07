@@ -60,7 +60,7 @@ cd demo
 
 ![redux work principle](https://redux.js.org/assets/images/ReduxAsyncDataFlowDiagram-d97ff38a0f4da0f327163170ccc13e80.gif)
 
-Concept
+#### Concept
 + Redux(`Module`)
   + `Store` class
   + `Store createStore(Reducer reducer, Object initalState, Enhancer enhancer)` api
@@ -169,3 +169,66 @@ npm install redux
 >     + `Object reducer(Object preState, Action curAction)` (`Reducer` type) api
 
 ### **React-Redux**
+#### Concept
++ React-Redux(`Module`)
+  + `<Provider value={Store store} />` component
+  + `ComponentWrapper connect(StateToProps mapStateToProps, DispatchToProps mapDispatchToProps)` api
+    + `StateToProps`(`Function` type): accept params `(state, props)` and return `props` for append
+    + `DispatchToProps`(`Function` type): accept params `(dispatch, props)` and return `props` for append
+    + `ComponentWrapper`: accept param `component` and return wrapped `component`
+
+#### Install
+```bash
+npm install react-redux
+```
+#### Config
+1. modify `@/index.js`
+    ```js
+    ...
+    import { createStore } from `redux`;
+    import { Provider } from `react-redux`;
+
+    const store = createStore((preState, curAction) => {
+        switch (curAction.type) {
+            case 'counter/increase':
+                return ({ ...preState, count: ++preState.count });
+            case 'counter/decrease':
+                return ({ ...preState, count: --preState.count });
+            default:
+                return preState;
+        }
+    }, { count: 0 });
+
+    ReactDOM.render(
+      <React.StrictMode>
+        <Provider value={store}>
+          <App />
+        </Provider>
+      </React.StrictMode>,
+      document.getElementById('root')
+    );
+    ...
+    ```
+2. modify `@/component/Counter.jsx`
+    ```jsx
+    ...
+    import { connect } from `react-redux`;
+
+    @connect(
+        (state, props) => ({ count: state.count }),
+        (dispatch, props) => ({
+            handleIncrement: () => dispatch({ type: 'counter/increase', payload: null }),
+            handleDecrement: () => dispatch({ type: 'counter/decrease', payload: null }),
+        })
+    )
+    export default class Counter extends Component {
+    render() {
+        return (<div>
+            <input type="button" value="+" onClick={this.props.handleIncrement} />
+            <span style={{ fontSize: 40 }}>{this.props.count}</span>
+            <input type="button" value="-" onClick={this.props.handleDecrement} />
+        </div>);
+    }
+    }
+    ...
+    ```
