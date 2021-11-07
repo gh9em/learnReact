@@ -1,4 +1,21 @@
 # learnReact
+## Principle
+v15
+```
+        |-Reconciler---------|  |-Renderer-------|
+|----|  | Render |----| Diff |  | ReactNative or |
+|Task|>>|>>>>>>>>|VDom|>>>>>>|>>|   ReactArt or  |
+|----|  |        |----|      |  |       ...      |
+        |--------------------|  |----------------|
+```
+v16
+```
+                 |-Reconciler----------|  |-Renderer-------|
+|----| Scheduler | Render |-----| Diff |  | ReactNative or |
+|Task|>>>>>>>>>>>|>>>>>>>>|Fiber|>>>>>>|>>|   ReactArt or  |
+|----|           |        |-----|      |  |       ...      |
+                 |---------------------|  |----------------|
+```
 ## Install
 ```bash
 # npm install --save-dev create-react-app
@@ -55,7 +72,7 @@ cd demo
     ...
     ```
 ## Modules
-### **Redux**(Observer-mode global state manager)
+### **Redux**(Observer-mode global immutable state manager)
 #### Principle
 
 ![redux work principle](https://redux.js.org/assets/images/ReduxAsyncDataFlowDiagram-d97ff38a0f4da0f327163170ccc13e80.gif)
@@ -151,13 +168,18 @@ npm install redux
 #### Middleware
 *redux-thunk*
 + enhanced Store(`Store` type)
-  + `Promise dispatch(AsyncActionCreator)` api
+  + `Promise dispatch(AsyncActionCreator action)` api
     + `AsyncActionCreator`(`Function` type): accept params `(dispatch, getState)` of `Store`
 
 *redux-promise*
 + enhanced Store(`Store` type)
-  + `void dispatch(AsyncActionCreator)` api
+  + `void dispatch(AsyncActionCreator action)` api
     + `PromiseActionCreator`(`Function` type): accept params `(dispatch, getState)` of `Store` and return `Promise`
+
+*redux-saga*
++ enhanced Store(`Store` type)
+  + `void dispatch(Action* action)` api
+    + `Action*`: similar to `action` but support `yield Reducer`
 
 > #### Add-on(*@reduxjs/toolkit*)
 > + Toolkit(`Module`)
@@ -171,7 +193,7 @@ npm install redux
 ### **React-Redux**
 #### Concept
 + React-Redux(`Module`)
-  + `<Provider value={Store store} />` component
+  + `<Provider value={Store store} />` context component
   + `ComponentWrapper connect(StateToProps mapStateToProps, DispatchToProps mapDispatchToProps)` api
     + `StateToProps`(`Function` type): accept params `(state, props)` and return `props` for append
     + `DispatchToProps`(`Function` type): accept params `(dispatch, props)` and return `props` for append
