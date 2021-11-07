@@ -140,6 +140,7 @@ npm install redux
     const render = () => ReactDOM.render(
         ...
     );
+
     render();
     subscribe(render);
     ```
