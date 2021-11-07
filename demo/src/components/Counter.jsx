@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { createStore } from 'redux';
+import { createStore/* , applyMiddleware */ } from 'redux';
+// import thunk from 'redux-thunk';
 
 const store = createStore((preState, curAction) => {
     switch (curAction.type) {
@@ -10,7 +11,7 @@ const store = createStore((preState, curAction) => {
         default:
             return preState;
     }
-}, { count: 0 });
+}, { count: 0 }/* , applyMiddleware(thunk) */);
 
 export const subscribe = render => store.subscribe(render);
 export default class Counter extends Component {

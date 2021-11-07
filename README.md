@@ -63,7 +63,10 @@ cd demo
 Concept
 + Redux(`Module`)
   + `Store` class
-  + `Store createStore(Reducer reducer, Object initalState)` api
+  + `Store createStore(Reducer reducer, Object initalState, Enhancer enhancer)` api
+    + `Enhancer`(`Function` type): similar to `Module` but accept param `createStore` api and return enhanced `createStore` api
+  + `Enhancer applyMiddleware(Middleware... middlewares)` api
+    + `Middleware`(`Function` type): accept param `store` then accept param `next` of composed chain then accept param `action` and return filted state `Object`
 + Store(`Object` type): state global storage
   + `Object getState()` api
   + `void dispath(Action action)` api
@@ -145,13 +148,24 @@ npm install redux
     subscribe(render);
     ```
 
-#### Add-on(*@reduxjs/toolkit*)
-+ Toolkit(`Module`)
-  + `Store configureStore({ reducer: { namespace: Reducer } })` api
-  + `Slice createSlice({ name: string, initialState: Object, reducers: { namespace: Reducer* } })` api
-    + `Reducer*`: similar to `Reducer` but supports mutable state (by lib `Immer`)
-  + Slice(`Object` type): slice toolkit
-    + `Action actions.namespace()` api
-    + `Object reducer(Object preState, Action curAction)` (`Reducer` type) api
+#### Middleware
+*redux-thunk*
++ enhanced Store(`Store` type)
+  + `Promise dispatch(AsyncActionCreator)` api
+    + `AsyncActionCreator`(`Function` type): accept params `(dispatch, getState)` of `Store`
+
+*redux-promise*
++ enhanced Store(`Store` type)
+  + `void dispatch(AsyncActionCreator)` api
+    + `PromiseActionCreator`(`Function` type): accept params `(dispatch, getState)` of `Store` and return `Promise`
+
+> #### Add-on(*@reduxjs/toolkit*)
+> + Toolkit(`Module`)
+>   + `Store configureStore({ reducer: { namespace: Reducer } })` api
+>   + `Slice createSlice({ name: string, initialState: Object, reducers: { namespace: Reducer* } })` api
+>     + `Reducer*`: similar to `Reducer` but supports mutable state (by lib `Immer`)
+>   + Slice(`Object` type): slice toolkit
+>     + `Action actions.namespace()` api
+>     + `Object reducer(Object preState, Action curAction)` (`Reducer` type) api
 
 ### **React-Redux**
