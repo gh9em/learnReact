@@ -54,19 +54,21 @@ cd demo
     }
     ...
     ```
+## Modules
+### **Redux**(Observer-mode global state manager)
+#### Principle
 
-## Redux
+![redux work principle](https://redux.js.org/assets/images/ReduxAsyncDataFlowDiagram-d97ff38a0f4da0f327163170ccc13e80.gif)
 
-![redux work principle](http://cn.redux.js.org/assets/images/ReduxDataFlowDiagram-49fa8c3968371d9ef6f2a1486bd40a26.gif)
-
+Concept
 + Redux(`Module`)
   + `Store` class
-  + `Store createStore(Reducer reducer)` api
+  + `Store createStore(Reducer reducer, Object initalState)` api
 + Store(`Object` type): state global storage
   + `Object getState()` api
   + `void dispath(Action action)` api
   + `void subscribe(Subscriber subscriber)` api
-+ Reducer(`Function` type): accept params `(preState, curAction)`, similar to `Array.property.reduce(preResult, curItem)`
++ Reducer(`Function` type): accept params `(preState, curAction)` and return immutable state `Object`, similar to `Array.property.reduce(preResult, curItem)`
   + Reducer Slice(`Function` type): all combined into a root reducer, for example
     ```js
     /**
@@ -77,14 +79,78 @@ cd demo
      *          |  |--------------|  |--------------|  |--------------| |
      *          |-------------------------------------------------------|
      */
-    // import { combineReduer } from 'redux';
+    // import { combineReducers } from 'redux';
     const combineReducers = reducers => 
         (state = {}, action) => Object.entries(reducers)
             .reduce((preState, [namespace, reduce]) => 
                 Object.defineProperty(preState, namespace, {value: reduce(state[namespace], action)}), {});
 
     const rootReducer = combineReduer({
-        action1: reducerSlice1(preState, action1) => ({...preState}),
-        action2: reducerSlice2(preState, action2) => ({...preState}),
+        action1: function reducerSlice1(preState, action1) { return ({...preState}); },
+        action2: function reducerSlice2(preState, action2) { return ({...preState}); },
     });
     ```
+#### Install
+```bash
+npm install redux
+```
+#### Config
+1. modify `@/components/Counter.jsx`
+    ```jsx
+    ...
+    import { createStore } from 'redux';
+
+    const store = createStore((preState, curAction) => {
+        switch (curAction.type) {
+            case 'counter/increase':
+                return ({ ...preState, count: ++preState.count });
+            case 'counter/decrease':
+                return ({ ...preState, count: --preState.count });
+            default:
+                return preState;
+        }
+    }, { count: 0 });
+
+    export const subscribe = render => store.subscribe(render);
+    export default class Counter extends Component {
+        ...
+        handleIncrement = () => {
+            store.dispatch({ type: 'counter/increase', payload: null });
+        }
+
+        handleDecrement = () => {
+            store.dispatch({ type: 'counter/decrease', payload: null });
+        }
+
+        render() {
+            return (<div>
+                ...
+                <span ... >{store.getState().count}</span>
+                ...
+            </div>);
+        }
+    }
+    ...
+    ```
+2. modify `@/index.js`
+    ```js
+    ...
+    import {subscribe} from './components/Counter';
+
+    const render = () => ReactDOM.render(
+        ...
+    );
+    render();
+    subscribe(render);
+    ```
+
+#### Add-on(*@reduxjs/toolkit*)
++ Toolkit(`Module`)
+  + `Store configureStore({ reducer: { namespace: Reducer } })` api
+  + `Slice createSlice({ name: string, initialState: Object, reducers: { namespace: Reducer* } })` api
+    + `Reducer*`: similar to `Reducer` but supports mutable state (by lib `Immer`)
+  + Slice(`Object` type): slice toolkit
+    + `Action actions.namespace()` api
+    + `Object reducer(Object preState, Action curAction)` (`Reducer` type) api
+
+### **React-Redux**

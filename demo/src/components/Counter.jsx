@@ -1,26 +1,33 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { createStore } from 'redux';
 
-export default class Counter extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            count: this.props.count || 0,
-        };
+const store = createStore((preState, curAction) => {
+    switch (curAction.type) {
+        case 'counter/increase':
+            return ({ ...preState, count: ++preState.count });
+        case 'counter/decrease':
+            return ({ ...preState, count: --preState.count });
+        default:
+            return preState;
     }
+}, { count: 0 });
+
+export const subscribe = render => store.subscribe(render);
+export default class Counter extends Component {
 
     handleIncrement = () => {
-        this.setState((preState, preProps) => ({...preState, count: ++preState.count}));
+        store.dispatch({ type: 'counter/increase', payload: null });
     }
 
     handleDecrement = () => {
-        this.setState((preState, preProps) => ({...preState, count: --preState.count}));
+        store.dispatch({ type: 'counter/decrease', payload: null });
     }
 
     render() {
         return (<div>
-        <input type="button" value="+" onClick={this.handleIncrement} />
-        <span style={{fontSize: 40}}>{this.state.count}</span>
-        <input type="button" value="-" onClick={this.handleDecrement} />
+            <input type="button" value="+" onClick={this.handleIncrement} />
+            <span style={{ fontSize: 40 }}>{store.getState().count}</span>
+            <input type="button" value="-" onClick={this.handleDecrement} />
         </div>);
     }
 }
