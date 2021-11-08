@@ -118,9 +118,9 @@ npm install redux
 1. modify `@/components/Counter.jsx`
     ```jsx
     ...
-    import { createStore } from 'redux';
+    import * as redux from 'redux';
 
-    const store = createStore((preState, curAction) => {
+    const store = redux.createStore((preState, curAction) => {
         switch (curAction.type) {
             case 'counter/increase':
                 return ({ ...preState, count: ++preState.count });
@@ -207,10 +207,10 @@ npm install react-redux
 1. modify `@/index.js`
     ```js
     ...
-    import { createStore } from `redux`;
+    import * as redux from `redux`;
     import { Provider } from `react-redux`;
 
-    const store = createStore((preState, curAction) => {
+    const store = redux.createStore((preState, curAction) => {
         switch (curAction.type) {
             case 'counter/increase':
                 return ({ ...preState, count: ++preState.count });
