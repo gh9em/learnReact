@@ -17,9 +17,9 @@ function App() {
           rel="noopener noreferrer"
         >
           Learn React
-          <Counter />
-          <Counter count="1"/>
         </a>
+        <Counter />
+        <Counter count="1"/>
       </header>
     </div>
   );
