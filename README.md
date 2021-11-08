@@ -191,6 +191,48 @@ npm install redux
 >     + `Object reducer(Object preState, Action curAction)` (`Reducer` type) api
 
 ### **React-Redux**
+### Principle
+```js
+import React, { Component } from 'react';
+
+const ReduxContext = React.createContext();
+
+export const Provider = props => (<ReduxContext.Provider value={props.store} {...props} />);
+export function connect(mapStateToProps, mapDispatchToProps) {
+    return WrappedComponent => {
+        class WrapperComponent extends Component {
+            render() {
+                return (
+                    <ReduxContext.Consumer>
+                        {store => {
+                            if (!store)
+                                throw new Error(`Component '${WrapperComponent.displayName}' must wrapped with '${Provider.name}'`);
+                            store.subscribe(() => this.forceUpdate());
+                            return (<WrappedComponent
+                                {...this.props}
+                                {...mapStateToProps(store.getState(), this.props)}
+                                {...mapDispatchToProps(store.dispatch, this.props)}
+                                ref={this.props.forwardedRef} />);
+                        }}
+                    </ReduxContext.Consumer>
+                );
+            }
+        };
+        /* manual copy static methods */
+        WrapperComponent.displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+
+        return React.forwardRef((props, ref) => {
+            const wrappedRef = React.useRef();
+            /* append wrappedRef method to ref */
+            React.useImperativeHandle(ref, () => ({
+                doSomthing: (...args) => wrappedRef.current.doSomthing(...args),
+            }));
+            return (<WrapperComponent {...props} forwardedRef={wrappedRef} />);
+        });
+    };
+};
+```
+
 #### Concept
 + React-Redux(`Module`)
   + `<Provider value={Store store} />` context component
@@ -223,7 +265,7 @@ npm install react-redux
 
     ReactDOM.render(
       <React.StrictMode>
-        <Provider value={store}>
+        <Provider store={store}>
           <App />
         </Provider>
       </React.StrictMode>,
@@ -236,21 +278,21 @@ npm install react-redux
     ...
     import { connect } from `react-redux`;
 
-    @connect(
+    class Counter extends Component {
+        render() {
+            return (<div>
+                <input type="button" value="+" onClick={this.props.handleIncrement} />
+                <span style={{ fontSize: 40 }}>{this.props.count}</span>
+                <input type="button" value="-" onClick={this.props.handleDecrement} />
+            </div>);
+        }
+    }
+    export default connect(
         (state, props) => ({ count: state.count }),
         (dispatch, props) => ({
             handleIncrement: () => dispatch({ type: 'counter/increase', payload: null }),
             handleDecrement: () => dispatch({ type: 'counter/decrease', payload: null }),
         })
-    )
-    export default class Counter extends Component {
-    render() {
-        return (<div>
-            <input type="button" value="+" onClick={this.props.handleIncrement} />
-            <span style={{ fontSize: 40 }}>{this.props.count}</span>
-            <input type="button" value="-" onClick={this.props.handleDecrement} />
-        </div>);
-    }
-    }
+    )(Counter);
     ...
     ```

@@ -3,17 +3,28 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {subscribe} from './components/Counter';
+import * as Redux from 'redux';
+import { Provider } from './react-redux';
 
-const render = () => ReactDOM.render(
+const store = Redux.createStore((preState, curAction) => {
+  switch (curAction.type) {
+      case 'counter/increase':
+          return ({ ...preState, count: ++preState.count });
+      case 'counter/decrease':
+          return ({ ...preState, count: --preState.count });
+      default:
+          return preState;
+  }
+}, { count: 0 }/* , redux.applyMiddleware(thunk) */);
+
+ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
-
-render();
-subscribe(render);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
